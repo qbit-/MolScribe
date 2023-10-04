@@ -18,11 +18,11 @@ FORMAT_INFO = {
     "atomtok": {
         "name": "SMILES_atomtok",
         "tokenizer": "tokenizer_smiles_atomtok.json",
-        "max_len": 256
+        "max_len": 64
     },
     "nodes": {"max_len": 384},
-    "atomtok_coords": {"max_len": 480},
-    "chartok_coords": {"max_len": 480}
+    "atomtok_coords": {"max_len": 120},
+    "chartok_coords": {"max_len": 120}
 }
 
 
