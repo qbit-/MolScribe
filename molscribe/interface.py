@@ -1,17 +1,16 @@
 import argparse
-from typing import List
+from typing import Any, List
 
 import cv2
-import torch
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
+import torch
 from matplotlib.backends.backend_agg import FigureCanvasAgg
 
-from .dataset import get_transforms
-from .model import Encoder, Decoder
 from .chemistry import convert_graph_to_smiles
+from .dataset import get_transforms
+from .model import Decoder, Encoder
 from .tokenizer import get_tokenizer
-
 
 BOND_TYPES = ["", "single", "double", "triple", "aromatic", "solid wedge", "dashed wedge"]
 
@@ -25,7 +24,7 @@ def safe_load(module, module_states):
 
 class MolScribe:
 
-    def __init__(self, model_path, device=None):
+    def __init__(self, model_path, device=None) -> None:
         """
         MolScribe Interface
         :param model_path: path of the model checkpoint.
@@ -88,7 +87,7 @@ class MolScribe:
         decoder.eval()
         return encoder, decoder
 
-    def predict_images(self, input_images: List, return_atoms_bonds=False, return_confidence=False, batch_size=16):
+    def predict_images(self, input_images: List, return_atoms_bonds=False, return_confidence=False, batch_size=16) -> list[dict[str, Any]]:
         device = self.device
         predictions = []
         self.decoder.compute_confidence = return_confidence
@@ -96,9 +95,9 @@ class MolScribe:
         for idx in range(0, len(input_images), batch_size):
             batch_images = input_images[idx:idx+batch_size]
             images = [self.transform(image=image, keypoints=[])['image'] for image in batch_images]
-            images = torch.stack(images, dim=0).to(device)
+            images_tensor = torch.stack(images, dim=0).to(device)
             with torch.no_grad():
-                features, hiddens = self.encoder(images)
+                features, hiddens = self.encoder(images_tensor)
                 batch_predictions = self.decoder.decode(features, hiddens)
             predictions += batch_predictions
 
@@ -145,11 +144,11 @@ class MolScribe:
             outputs.append(pred_dict)
         return outputs
 
-    def predict_image(self, image, return_atoms_bonds=False, return_confidence=False):
+    def predict_image(self, image, return_atoms_bonds=False, return_confidence=False) -> dict[str, Any]:
         return self.predict_images([
             image], return_atoms_bonds=return_atoms_bonds, return_confidence=return_confidence)[0]
 
-    def predict_image_files(self, image_files: List, return_atoms_bonds=False, return_confidence=False):
+    def predict_image_files(self, image_files: List, return_atoms_bonds=False, return_confidence=False) -> list[dict[str, Any]]:
         input_images = []
         for path in image_files:
             image = cv2.imread(path)
@@ -158,7 +157,7 @@ class MolScribe:
         return self.predict_images(
             input_images, return_atoms_bonds=return_atoms_bonds, return_confidence=return_confidence)
 
-    def predict_image_file(self, image_file: str, return_atoms_bonds=False, return_confidence=False):
+    def predict_image_file(self, image_file: str, return_atoms_bonds=False, return_confidence=False) -> dict[str, Any]:
         return self.predict_image_files(
             [image_file], return_atoms_bonds=return_atoms_bonds, return_confidence=return_confidence)[0]
 
