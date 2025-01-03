@@ -19,12 +19,11 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.utils.checkpoint as checkpoint
-
 from timm.data import IMAGENET_DEFAULT_MEAN, IMAGENET_DEFAULT_STD
 from timm.models.helpers import build_model_with_cfg, overlay_external_default_cfg
-from timm.models.layers import Mlp, DropPath, to_2tuple, trunc_normal_
+from timm.models.layers import DropPath, Mlp, to_2tuple, trunc_normal_
 from timm.models.registry import register_model
-from timm.models.vision_transformer import checkpoint_filter_fn, _init_vit_weights
+from timm.models.vision_transformer import _init_vit_weights, checkpoint_filter_fn
 
 _logger = logging.getLogger(__name__)
 
@@ -146,7 +145,7 @@ class WindowAttention(nn.Module):
         # get pair-wise relative position index for each token inside the window
         coords_h = torch.arange(self.window_size[0])
         coords_w = torch.arange(self.window_size[1])
-        coords = torch.stack(torch.meshgrid([coords_h, coords_w]))  # 2, Wh, Ww
+        coords = torch.stack(torch.meshgrid([coords_h, coords_w], indexing='ij'))  # 2, Wh, Ww
         coords_flatten = torch.flatten(coords, 1)  # 2, Wh*Ww
         relative_coords = coords_flatten[:, :, None] - coords_flatten[:, None, :]  # 2, Wh*Ww, Wh*Ww
         relative_coords = relative_coords.permute(1, 2, 0).contiguous()  # Wh*Ww, Wh*Ww, 2
@@ -411,7 +410,7 @@ class BasicLayer(nn.Module):
     def forward(self, x, H, W, hiddens):
         for blk in self.blocks:
             if not torch.jit.is_scripting() and self.use_checkpoint:
-                x = checkpoint.checkpoint(blk, x, H, W)
+                x = checkpoint.checkpoint(blk, x, H, W, use_reentrant=True)
             else:
                 x = blk(x, H, W)
         hiddens.append(x)
