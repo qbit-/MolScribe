@@ -13,6 +13,7 @@ from .model import Decoder, Encoder
 from .tokenizer import get_tokenizer
 
 BOND_TYPES = ["", "single", "double", "triple", "aromatic", "solid wedge", "dashed wedge"]
+plt.switch_backend('Agg')  # no display
 
 
 def safe_load(module, module_states):
