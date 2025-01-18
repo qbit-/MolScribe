@@ -16,15 +16,16 @@ packages = [
 include = ["molscribe/vocab/*"]
 
 [tool.poetry.dependencies]
-python = ">=3.10,<3.13"
+python = ">=3.10,<3.12"
 numpy = "<2"
 torch = "2.*"
-timm = "0.4.12"
+timm = "^1.0.13"
 rdkit-pypi = "^2022.9.5"
 opencv-python = "^4.10.0.84"
 pandas = "^2.2.3"
 matplotlib = "^3.10.0"
-opennmt-py = "2.2.0"
+opennmt-py = "^3.5.1"
 smilespe = "0.0.3"
 albumentations = "1.1"
+ctranslate2 = "<=4.3.1"
 
