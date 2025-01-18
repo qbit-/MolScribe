@@ -16,9 +16,9 @@ packages = [
 include = ["molscribe/vocab/*"]
 
 [tool.poetry.dependencies]
-python = ">=3.10,<3.12"
+python = ">=3.10,<3.13"
 numpy = "<2"
-torch = "2.2.2"
+torch = "^2.2.*"
 timm = "0.4.12"
 rdkit-pypi = "^2022.9.5"
 opencv-python = "^4.10.0.84"
