@@ -20,9 +20,8 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.utils.checkpoint as checkpoint
 from timm.data import IMAGENET_DEFAULT_MEAN, IMAGENET_DEFAULT_STD
-from timm.models.helpers import build_model_with_cfg, named_apply
-from timm.models.layers import DropPath, Mlp, to_2tuple, trunc_normal_
-from timm.models.registry import register_model
+from timm.layers import DropPath, Mlp, to_2tuple, trunc_normal_
+from timm.models import build_model_with_cfg, named_apply, register_model
 from timm.models.vision_transformer import checkpoint_filter_fn, get_init_weights_vit
 
 _logger = logging.getLogger(__name__)
