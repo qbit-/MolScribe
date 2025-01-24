@@ -183,7 +183,7 @@ def normalized_grid_distortion(
     return A.augmentations.functional.grid_distortion(img, num_steps, xsteps, ysteps, *args, **kwargs)
 
 
-class NormalizedGridDistortion(A.augmentations.transforms.GridDistortion):
+class NormalizedGridDistortion(A.augmentations.GridDistortion):
     def apply(self, img, stepsx=(), stepsy=(), interpolation=cv2.INTER_LINEAR, **params):
         return normalized_grid_distortion(img, self.num_steps, stepsx, stepsy, interpolation, self.border_mode,
                                           self.value)
