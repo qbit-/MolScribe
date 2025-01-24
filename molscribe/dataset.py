@@ -1,26 +1,26 @@
 import os
-import cv2
-import time
 import random
 import re
 import string
+import time
+
+import albumentations as A
+import cv2
 import numpy as np
 import pandas as pd
 import torch
 import torch.nn.functional as F
-from torch.utils.data import DataLoader, Dataset
-from torch.nn.utils.rnn import pad_sequence, pack_padded_sequence
-import albumentations as A
 from albumentations.pytorch import ToTensorV2
+from torch.nn.utils.rnn import pad_sequence
+from torch.utils.data import Dataset
 
+from .augment import CropWhite, PadWhite, SaltAndPepperNoise
+from .chemistry import normalize_nodes
+from .constants import COLORS, ELEMENTS, RGROUP_SYMBOLS, SUBSTITUTIONS
 from .indigo import Indigo
 from .indigo.renderer import IndigoRenderer
-
-from .augment import SafeRotate, CropWhite, PadWhite, SaltAndPepperNoise
-from .utils import FORMAT_INFO
 from .tokenizer import PAD_ID
-from .chemistry import get_num_atoms, normalize_nodes
-from .constants import RGROUP_SYMBOLS, SUBSTITUTIONS, ELEMENTS, COLORS
+from .utils import FORMAT_INFO
 
 cv2.setNumThreads(1)
 
@@ -36,7 +36,7 @@ INDIGO_COLOR_PROB = 0.2
 def get_transforms(input_size, augment=True, rotate=True, debug=False):
     trans_list = []
     if augment and rotate:
-        trans_list.append(SafeRotate(limit=90, border_mode=cv2.BORDER_CONSTANT, value=(255, 255, 255)))
+        trans_list.append(A.SafeRotate(limit=90, border_mode=cv2.BORDER_CONSTANT, value=(255, 255, 255)))
     trans_list.append(CropWhite(pad=5))
     if augment:
         trans_list += [
@@ -45,7 +45,7 @@ def get_transforms(input_size, augment=True, rotate=True, debug=False):
             PadWhite(pad_ratio=0.4, p=0.2),
             A.Downscale(scale_min=0.2, scale_max=0.5, interpolation=3),
             A.Blur(),
-            A.GaussNoise(),
+            A.GaussNoise(per_channel=False),
             SaltAndPepperNoise(num_dots=20, p=0.5)
         ]
     trans_list.append(A.Resize(input_size, input_size))
