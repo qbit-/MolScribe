@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "MolScribe"
-version = "1.1.1"
+version = "1.1.2"
 description = "MolScribe"
 authors = ["Yujie Qian <yujieq@csail.mit.edu>"]
 readme = "README.md"
