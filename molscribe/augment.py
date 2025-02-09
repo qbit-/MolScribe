@@ -9,7 +9,7 @@ import numpy as np
 class CropWhite(A.DualTransform):
     
     def __init__(self, value=(255, 255, 255), pad=0, p=1.0):
-        super(CropWhite, self).__init__(p=p)
+        super().__init__(p=p)
         self.value = value
         self.pad = pad
         assert pad >= 0
@@ -53,9 +53,11 @@ class CropWhite(A.DualTransform):
             img, self.pad, self.pad, self.pad, self.pad, border_mode=cv2.BORDER_CONSTANT, value=self.value)
         return img
 
-    def apply_to_keypoint(self, keypoint, crop_top=0, crop_bottom=0, crop_left=0, crop_right=0, **params):
-        x, y, angle, scale = keypoint[:4]
-        return x - crop_left + self.pad, y - crop_top + self.pad, angle, scale
+    def apply_to_keypoints(self, keypoints, crop_top=0, crop_bottom=0, crop_left=0, crop_right=0, **params):
+        if keypoints:
+            x, y, angle, scale = keypoints[:, :4].T
+            np.vstack([x - crop_left + self.pad, y - crop_top + self.pad, angle, scale]).T
+        return keypoints
 
     def get_transform_init_args_names(self):
         return ('value', 'pad')
@@ -90,9 +92,11 @@ class PadWhite(A.DualTransform):
             img, pad_top, pad_bottom, pad_left, pad_right, border_mode=cv2.BORDER_CONSTANT, value=self.value)
         return img
 
-    def apply_to_keypoint(self, keypoint, pad_top=0, pad_bottom=0, pad_left=0, pad_right=0, **params):
-        x, y, angle, scale = keypoint[:4]
-        return x + pad_left, y + pad_top, angle, scale
+    def apply_to_keypoints(self, keypoints, pad_top=0, pad_bottom=0, pad_left=0, pad_right=0, **params):
+        if keypoints:
+            x, y, angle, scale = keypoints[:, :4].T
+            keypoints = np.vstack([x - pad_left, y - pad_top, angle, scale]).T
+        return keypoints
 
     def get_transform_init_args_names(self):
         return ('value', 'pad_ratio')
@@ -114,8 +118,8 @@ class SaltAndPepperNoise(A.DualTransform):
             img[x, y] = self.value
         return img
 
-    def apply_to_keypoint(self, keypoint, **params):
-        return keypoint
+    def apply_to_keypoints(self, keypoints, **params):
+        return keypoints
 
     def get_transform_init_args_names(self):
         return ('value', 'num_dots')
