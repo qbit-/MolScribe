@@ -54,7 +54,7 @@ class CropWhite(A.DualTransform):
         return img
 
     def apply_to_keypoints(self, keypoints, crop_top=0, crop_bottom=0, crop_left=0, crop_right=0, **params):
-        if keypoints:
+        if len(keypoints) > 0:
             x, y, angle, scale = keypoints[:, :4].T
             np.vstack([x - crop_left + self.pad, y - crop_top + self.pad, angle, scale]).T
         return keypoints
@@ -93,7 +93,7 @@ class PadWhite(A.DualTransform):
         return img
 
     def apply_to_keypoints(self, keypoints, pad_top=0, pad_bottom=0, pad_left=0, pad_right=0, **params):
-        if keypoints:
+        if len(keypoints) > 0:
             x, y, angle, scale = keypoints[:, :4].T
             keypoints = np.vstack([x - pad_left, y - pad_top, angle, scale]).T
         return keypoints
