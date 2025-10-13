@@ -1,31 +1,36 @@
 [build-system]
-requires = ["poetry-core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"
+requires = ["hatchling>=1.18"]
+build-backend = "hatchling.build"
 
-[tool.poetry]
+[project]
 name = "MolScribe"
-version = "1.1.3"
+version = "1.1.4"
 description = "MolScribe"
-authors = ["Yujie Qian <yujieq@csail.mit.edu>"]
 readme = "README.md"
-license = "MIT"
-homepage = "https://github.com/thomas0809/MolScribe"
-packages = [
-    { include = "molscribe" },
+license = { text = "MIT" }
+authors = [
+    { name = "Yujie Qian", email = "yujieq@csail.mit.edu" },
 ]
+requires-python = ">=3.10,<3.12"
+dependencies = [
+    "numpy<2",
+    "torch==2.2.*",
+    "timm>=0.9.16,<1",  # originally ^0.9.16
+    "rdkit",
+    "opencv-python>=4.6.0,<5",
+    "pandas>=2.2.3,<3",
+    "matplotlib>=3",
+    "opennmt-py<3",
+    "smilespe==0.0.3",
+    "albumentations>=1.1,<2",
+    "ctranslate2<=4.3.1",
+]
+
+[project.urls]
+Homepage = "https://github.com/thomas0809/MolScribe"
+
+[tool.hatch.build]
 include = ["molscribe/vocab/*"]
 
-[tool.poetry.dependencies]
-python = ">=3.10,<3.12"
-numpy = "<2"
-torch = "2.2.*"
-timm = "^0.9.16"  # "^1.0.13"
-rdkit-pypi = "^2022.9.5"
-opencv-python = "^4.6.0"
-pandas = "^2.2.3"
-matplotlib = ">=3"  # "^3.10.0"
-opennmt-py = "<3"
-smilespe = "0.0.3"
-albumentations = ">=1.1,<2"
-ctranslate2 = "<=4.3.1"
-
+[tool.hatch.build.targets.wheel]
+packages = ["molscribe"]
